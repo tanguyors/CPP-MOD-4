@@ -1,0 +1,79 @@
+================================================================================
+EXPLICATION DES CONCEPTS - EXERCICE 01 : "I don't want to set the world on fire"
+================================================================================
+
+Dans cet exercice, nous avons abordé deux concepts CRUCIAUX en C++ :
+1. La Copie Profonde (Deep Copy) vs La Copie Superficielle (Shallow Copy).
+2. L'importance des Destructeurs Virtuels.
+
+--------------------------------------------------------------------------------
+1. COPIE SUPERFICIELLE (SHALLOW COPY) vs COPIE PROFONDE (DEEP COPY)
+--------------------------------------------------------------------------------
+
+Imaginez que votre objet "Dog" est une feuille de papier.
+Sur cette feuille, il y a écrit : "Mon Cerveau se trouve dans le casier numéro 42".
+
+A. LA COPIE SUPERFICIELLE (Ce que fait le compilateur par défaut)
+-----------------------------------------------------------------
+Si vous photocopiez cette feuille (copie de l'objet Dog), la copie dira AUSSI :
+"Mon Cerveau se trouve dans le casier numéro 42".
+
+Résultat :
+- Vous avez 2 feuilles (2 Chiens).
+- MAIS vous n'avez qu'UN SEUL casier (1 Cerveau partagé).
+
+Le Danger :
+Si le premier Chien meurt, il vide son casier (delete brain).
+Le deuxième Chien se retrouve avec une feuille qui pointe vers un casier vide !
+S'il essaie d'y accéder -> CRASH (Segmentation Fault).
+
+B. LA COPIE PROFONDE (Ce que nous devons coder)
+-----------------------------------------------
+Pour faire une copie propre, nous devons :
+1. Louer un NOUVEAU casier (par exemple le numéro 88).
+2. Recopier tout le contenu du casier 42 vers le casier 88.
+3. Écrire sur la nouvelle feuille : "Mon Cerveau se trouve dans le casier numéro 88".
+
+Résultat :
+- 2 Chiens totalement indépendants.
+- Si l'un meurt, l'autre garde son cerveau intact.
+
+EXEMPLE DE CODE :
+
+// Mauvais (Shallow Copy)
+Dog::Dog(const Dog &src) {
+    this->brain = src.brain; // On copie juste l'adresse (le numéro de casier)
+}
+
+// Bon (Deep Copy)
+Dog::Dog(const Dog &src) {
+    this->brain = new Brain(*src.brain); // On crée un NOUVEAU cerveau et on copie le contenu
+}
+
+--------------------------------------------------------------------------------
+2. LE DESTRUCTEUR VIRTUEL (Virtual Destructor)
+--------------------------------------------------------------------------------
+
+Pourquoi le destructeur de "Animal" doit-il être 'virtual' ?
+
+Imaginez que vous tenez un Chien en laisse, mais vous fermez les yeux.
+Pour vous, c'est juste un "Animal".
+
+Animal* monAnimal = new Dog();
+
+Si vous dites "Supprime cet animal" (delete monAnimal) :
+
+- SANS virtual : Le programme voit "Animal", donc il appelle seulement le destructeur de "Animal".
+  Le destructeur de "Dog" n'est JAMAIS appelé.
+  Le "Brain" du chien reste en mémoire -> FUITE DE MÉMOIRE (Memory Leak).
+
+- AVEC virtual : Le programme vérifie le vrai type. "Ah, c'est un Dog !".
+  Il appelle d'abord le destructeur de Dog (qui supprime le Brain),
+  PUIS le destructeur de Animal.
+  Tout est propre.
+
+--------------------------------------------------------------------------------
+RÉSUMÉ POUR L'EXAMEN
+--------------------------------------------------------------------------------
+1. Si votre classe contient un pointeur (new), vous DEVEZ faire une Deep Copy.
+2. Si vous avez une classe Mère, son destructeur DOIT être virtual.

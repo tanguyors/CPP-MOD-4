@@ -1,0 +1,46 @@
+================================================================================
+EXPLICATION DES CONCEPTS - EXERCICE 02 : "Abstract class"
+================================================================================
+
+Dans cet exercice, nous avons transformé notre classe `Animal` en une **Classe Abstraite**.
+
+--------------------------------------------------------------------------------
+1. QU'EST-CE QU'UNE CLASSE ABSTRAITE ?
+--------------------------------------------------------------------------------
+Une classe abstraite est une classe qui ne peut PAS être instanciée directement.
+Cela signifie que vous ne pouvez pas créer un objet de ce type.
+
+Exemple :
+Animal* a = new Animal(); // ERREUR DE COMPILATION ! Interdit.
+Animal* b = new Dog();    // OK. On peut toujours utiliser des pointeurs.
+
+Pourquoi faire ça ?
+Dans la vraie vie, un "Animal" générique, ça n'existe pas. Vous ne croisez pas un "Animal" dans la rue. Vous croisez un Chien, un Chat, un Oiseau...
+La classe `Animal` sert juste de modèle de base pour les autres. Elle n'a pas vocation à exister toute seule.
+
+--------------------------------------------------------------------------------
+2. LA MÉTHODE VIRTUELLE PURE (Pure Virtual Function)
+--------------------------------------------------------------------------------
+Pour rendre une classe abstraite en C++, il suffit qu'elle possède AU MOINS UNE méthode virtuelle pure.
+
+Syntaxe :
+virtual void makeSound() const = 0;
+
+Le `= 0` est très important. Il dit au compilateur :
+"Cette fonction n'a pas de corps ici. Elle est INCOMPLÈTE."
+
+Conséquences :
+1. La classe `Animal` devient incomplète (Abstraite), donc impossible à créer.
+2. Les classes enfants (`Dog`, `Cat`) SONT OBLIGÉES de fournir le code de cette fonction.
+   Si `Dog` oublie de coder `makeSound()`, alors `Dog` devient abstraite aussi (et impossible à créer).
+
+C'est une façon de forcer les développeurs à respecter un "Contrat".
+"Si tu veux être un Animal, tu DOIS être capable de faire un bruit."
+
+--------------------------------------------------------------------------------
+RÉSUMÉ
+--------------------------------------------------------------------------------
+- `virtual void f() {}`  -> Fonction virtuelle normale. Peut être redéfinie, mais a un comportement par défaut.
+- `virtual void f() = 0;` -> Fonction virtuelle pure. DOIT être redéfinie. Rend la classe abstraite.
+
+C'est l'outil parfait pour créer des interfaces ou des modèles de base solides.

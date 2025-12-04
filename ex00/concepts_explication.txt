@@ -1,0 +1,75 @@
+================================================================================
+EXPLICATION DES CONCEPTS - EXERCICE 00 : "Polymorphism"
+================================================================================
+
+Dans cet exercice, nous découvrons les bases de la Programmation Orientée Objet (POO) avancée :
+1. L'Héritage.
+2. Le Polymorphisme (via le mot-clé `virtual`).
+
+--------------------------------------------------------------------------------
+1. L'HÉRITAGE (INHERITANCE)
+--------------------------------------------------------------------------------
+C'est le concept de "Famille".
+Nous avons une classe de base `Animal`.
+Nous avons des classes dérivées `Dog` et `Cat`.
+
+On dit que :
+- Le Chien EST UN Animal.
+- Le Chat EST UN Animal.
+
+Cela permet de regrouper des objets différents sous une même étiquette.
+Dans le code : `class Dog : public Animal` signifie que Dog hérite de tout ce que Animal possède.
+
+--------------------------------------------------------------------------------
+2. LE POLYMORPHISME ET LE MOT-CLÉ 'VIRTUAL'
+--------------------------------------------------------------------------------
+
+C'est là que la magie opère.
+Imaginez un Vétérinaire (votre programme) qui a les yeux bandés.
+On lui donne un animal et on lui dit : "Fais-le parler".
+
+Le Vétérinaire tient un pointeur de type `Animal*`. Il ne sait pas si c'est un chien ou un chat.
+
+A. SANS 'VIRTUAL' (Liaison Statique)
+------------------------------------
+C'est ce qui se passe avec `WrongAnimal`.
+Le compilateur regarde le TYPE DU POINTEUR (`WrongAnimal*`).
+Il se dit : "C'est un WrongAnimal, donc j'appelle la fonction makeSound() de WrongAnimal."
+Même si l'objet est en réalité un `WrongCat`, le programme l'ignore.
+Résultat : Le chat fait le bruit par défaut de l'animal. C'est une erreur.
+
+B. AVEC 'VIRTUAL' (Liaison Dynamique)
+-------------------------------------
+C'est ce qui se passe avec `Animal`.
+Le mot-clé `virtual` agit comme un badge d'identité sur l'objet.
+Quand le Vétérinaire appelle `makeSound()`, le programme se dit :
+"Attends, cette fonction est virtuelle. Je ne vais pas me fier au pointeur. Je vais regarder l'objet RÉEL en mémoire."
+Il voit que c'est un `Dog`.
+Il appelle donc `Dog::makeSound()`.
+Résultat : Le chien aboie, même si on le manipule via un pointeur `Animal*`.
+
+--------------------------------------------------------------------------------
+RÉSUMÉ DU CODE
+--------------------------------------------------------------------------------
+
+// Cas 1 : Polymorphisme (Correct)
+Animal* a = new Dog();
+a->makeSound(); 
+// -> Le programme vérifie le type réel (Dog) -> Affiche "Woof"
+
+// Cas 2 : Pas de Polymorphisme (Incorrect)
+WrongAnimal* b = new WrongCat();
+b->makeSound();
+// -> Le programme regarde juste le pointeur (WrongAnimal) -> Affiche "Wrong Sound"
+
+--------------------------------------------------------------------------------
+POURQUOI C'EST UTILE ?
+--------------------------------------------------------------------------------
+Cela permet d'écrire du code générique.
+Vous pouvez faire une liste d'Animaux (tableau de `Animal*`) contenant des Chiens, des Chats, des Oiseaux...
+Et faire une boucle :
+    for (int i = 0; i < n; i++)
+        liste[i]->makeSound();
+
+Chaque animal fera son propre bruit, sans que vous ayez besoin de savoir exactement quel animal est à quelle case.
+C'est la puissance du polymorphisme.
